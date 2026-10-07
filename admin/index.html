@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Painel · Neos Group</title>
+<link rel="icon" href="/assets/img/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..800&display=swap">
+<link rel="stylesheet" href="/admin/admin.css">
+</head>
+<body>
+
+<!-- login -->
+<section class="login" id="login" hidden>
+  <form class="login__card" id="login-form">
+    <img src="/assets/img/logo.png" alt="Neos Group" width="150">
+    <h1>Painel do site</h1>
+    <label for="pw">Senha</label>
+    <input id="pw" type="password" autocomplete="current-password" required autofocus>
+    <button class="b b--primary" type="submit">Entrar</button>
+    <p class="login__err" id="login-err" role="alert"></p>
+  </form>
+</section>
+
+<!-- app -->
+<div class="app" id="app" hidden>
+  <aside class="side">
+    <div class="side__brand"><img src="/assets/img/logo.png" alt="Neos Group" width="120"><span>Painel</span></div>
+    <nav class="side__nav" id="side-nav" aria-label="Seções do painel"></nav>
+    <div class="side__foot">
+      <a class="b b--ghost b--sm" href="/" target="_blank" rel="noopener">Ver site ↗</a>
+      <button class="b b--ghost b--sm" id="logout" type="button">Sair</button>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="top">
+      <button class="b b--ghost b--sm top__menu" id="side-toggle" type="button" aria-label="Abrir menu">☰</button>
+      <div class="top__title"><h1 id="view-title">—</h1><p id="view-sub"></p></div>
+      <div class="top__actions">
+        <span class="dirty" id="dirty" hidden>Alterações não salvas</span>
+        <a class="b b--ghost b--sm" id="preview-link" href="/" target="_blank" rel="noopener">Pré-visualizar ↗</a>
+        <button class="b b--primary" id="save" type="button" disabled>Salvar alterações</button>
+      </div>
+    </header>
+    <div class="view" id="view"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<datalist id="link-suggestions"></datalist>
+
+<script src="/lib/icons.js"></script>
+<script src="/lib/schemas.js"></script>
+<script src="/admin/admin.js"></script>
+</body>
+</html>

@@ -33,7 +33,7 @@ Para definir a senha inicial você mesmo: `ADMIN_PASSWORD=suasenha npm start`.
 | Contato | E-mail, telefone, endereço e link do mapa (usados no rodapé, formulários e cartões) |
 | Cores | Azul escuro, azul da marca, azul água e cor dos botões principais |
 | Rastreamento | ID do Google Tag Manager e nome do evento do dataLayer |
-| Leads | Todos os envios dos formulários, com exportação CSV (abre no Excel) |
+| Leads | Todos os envios dos formulários, com exportação CSV (abre no Excel) e exclusão |
 | Histórico | Backup automático a cada salvamento (últimos 40), com botão de restaurar |
 
 Links internos começando com `/` viram automaticamente `/es/...` quando o visitante está em espanhol.
@@ -66,6 +66,10 @@ CRM, configure um webhook em **Painel → Formulários** (Zapier, Make, n8n, Hub
 por POST em JSON.
 
 ## Publicação na Vercel (configuração atual)
+
+- Site: https://neos-group-lyart.vercel.app (painel em `/admin/`)
+- Repositório: https://github.com/pedrooliveira-m2z/neos-group
+- Projeto Vercel: `neos-group` (time PEDRO M2Z), Blob store privado `neos-group-blob`
 
 O repositório já está pronto para a Vercel:
 

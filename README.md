@@ -85,8 +85,7 @@ Variáveis de ambiente no projeto da Vercel:
 | Variável | Uso |
 |---|---|
 | `BLOB_READ_WRITE_TOKEN` | Criada automaticamente ao conectar o Blob store ao projeto |
-| `ADMIN_PASSWORD` | Senha inicial do painel (obrigatória na Vercel). Depois de trocar a senha pelo painel, ela deixa de ser usada |
-| `ADMIN_PASSWORD_RESET` | Opcional: com valor `1`, volta a senha para `ADMIN_PASSWORD` (use só para recuperar acesso e remova depois) |
+| `ADMIN_PASSWORD` | Senha do painel (obrigatória na Vercel). **Para redefinir a senha, altere esta variável e faça um novo deploy.** Uma senha trocada pelo painel continua valendo enquanto a variável não mudar |
 | `SITE_URL` | Domínio final, ex. `https://neosindustrialsolutions.com` (canonical, hreflang e sitemap) |
 
 Observações:

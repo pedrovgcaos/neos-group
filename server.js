@@ -1,7 +1,7 @@
 // Neos Group — servidor do site + painel admin.
 //   npm start  → http://localhost:3000   (admin em /admin)
 // Roda como servidor Node comum (local/VPS) ou como função da Vercel (api/index.js).
-// Variáveis de ambiente: PORT, DATA_DIR, ADMIN_PASSWORD, ADMIN_PASSWORD_RESET, SITE_URL, BLOB_READ_WRITE_TOKEN
+// Variáveis de ambiente: PORT, DATA_DIR, ADMIN_PASSWORD, SITE_URL, BLOB_READ_WRITE_TOKEN
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
@@ -62,11 +62,15 @@ function ready() {
       if (!s) { s = { key: crypto.randomBytes(32).toString('hex') }; await store.setJSON('secret', s); }
       SECRET = s.key;
 
-      const hasAuth = !!(await store.getJSON('auth'));
-      if (!hasAuth || process.env.ADMIN_PASSWORD_RESET) {
-        if (process.env.ADMIN_PASSWORD) {
-          await store.setJSON('auth', hashPassword(process.env.ADMIN_PASSWORD));
-        } else if (store.kind === 'fs') {
+      // ADMIN_PASSWORD vale quando é definida ou ALTERADA no servidor; senha trocada pelo painel
+      // continua valendo enquanto a variável não mudar (envFp guarda qual valor já foi aplicado)
+      const auth = await store.getJSON('auth');
+      const envPw = process.env.ADMIN_PASSWORD;
+      const envFp = envPw ? crypto.createHmac('sha256', SECRET).update('admin-env:' + envPw).digest('hex') : null;
+      if (envPw && (!auth || auth.envFp !== envFp)) {
+        await store.setJSON('auth', { ...hashPassword(envPw), envFp });
+      } else if (!auth) {
+        if (store.kind === 'fs') {
           const pw = crypto.randomBytes(6).toString('base64url');
           await store.setJSON('auth', hashPassword(pw));
           fs.writeFileSync(path.join(DATA, 'admin-password.txt'), `Senha inicial do painel /admin: ${pw}\nTroque em Configurações > Senha e apague este arquivo.\n`);
@@ -352,7 +356,8 @@ async function api(req, res, p) {
     const b = await readJsonBody(req);
     if (!(await checkPassword(b.current || ''))) return json(res, 400, { ok: false, error: 'Senha atual incorreta.' });
     if (String(b.next || '').length < 8) return json(res, 400, { ok: false, error: 'A nova senha precisa ter pelo menos 8 caracteres.' });
-    await store.setJSON('auth', hashPassword(b.next));
+    const prev = (await store.getJSON('auth')) || {};
+    await store.setJSON('auth', { ...hashPassword(b.next), envFp: prev.envFp });
     if (store.kind === 'fs') { try { fs.unlinkSync(path.join(DATA, 'admin-password.txt')); } catch { /* já removido */ } }
     return json(res, 200, { ok: true });
   }

@@ -529,13 +529,17 @@
       if (!leads.length) { box.append(el('p', { class: 'empty', text: 'Nenhum envio ainda. Os formulários do site aparecem aqui assim que alguém enviar.' })); return; }
       const fmt = (d) => new Date(d).toLocaleString('pt-BR');
       box.append(el('table', { class: 't' },
-        el('thead', null, el('tr', null, ['Data', 'Tipo', 'Nome', 'E-mail', 'Telefone', 'Empresa', 'Cidade/Estado', 'Mensagem', 'Origem'].map((h) => el('th', { text: h })))),
+        el('thead', null, el('tr', null, ['Data', 'Tipo', 'Nome', 'E-mail', 'Telefone', 'Empresa', 'Cidade/Estado', 'Mensagem', 'Origem', ''].map((h) => el('th', { text: h })))),
         el('tbody', null, leads.map((l) => el('tr', null,
           el('td', { text: fmt(l.createdAt) }),
           el('td', null, el('span', { class: 'badge' + (l.type === 'newsletter' ? ' badge--news' : ''), text: l.type === 'newsletter' ? 'Newsletter' : 'Contato' })),
           el('td', { text: l.name }), el('td', null, el('a', { href: 'mailto:' + l.email, text: l.email })), el('td', { text: l.phone }),
           el('td', { text: l.company }), el('td', { text: [l.city, l.state].filter(Boolean).join(' / ') }),
-          el('td', { class: 'msg', text: l.message }), el('td', { text: `${l.form || ''} · ${(l.lang || '').toUpperCase()} · ${l.page || ''}` }))))));
+          el('td', { class: 'msg', text: l.message }), el('td', { text: `${l.form || ''} · ${(l.lang || '').toUpperCase()} · ${l.page || ''}` }),
+          el('td', null, el('button', { class: 'b b--danger b--sm', type: 'button', onclick: async () => {
+            if (!confirm(`Excluir definitivamente o lead de ${l.name || l.email}?`)) return;
+            try { await api('POST', '/api/leads/delete', { id: l.id }); toast('Lead excluído.'); renderView(); } catch (e) { toast(e.message, true); }
+          } }, 'Excluir')))))));
     } catch (e) { box.innerHTML = ''; box.append(el('p', { class: 'empty', text: e.message })); }
   }
 
@@ -553,7 +557,12 @@
           el('td', null, el('div', { class: 'img-prev', style: 'width:96px;height:64px' }, el('img', { src: f.url, alt: '' }))),
           el('td', null, el('a', { href: f.url, target: '_blank', rel: 'noopener', text: f.url })),
           el('td', { text: (f.size / 1024).toFixed(0) + ' KB' }),
-          el('td', null, el('button', { class: 'b b--ghost b--sm', type: 'button', onclick: () => navigator.clipboard.writeText(f.url).then(() => toast('Link copiado.')) }, 'Copiar link')))))));
+          el('td', null, el('div', { class: 'row-actions', style: 'margin:0' },
+            el('button', { class: 'b b--ghost b--sm', type: 'button', onclick: () => navigator.clipboard.writeText(f.url).then(() => toast('Link copiado.')) }, 'Copiar link'),
+            el('button', { class: 'b b--danger b--sm', type: 'button', onclick: async () => {
+              if (!confirm('Excluir esta imagem? Se ela estiver em uso no site, o lugar dela ficará vazio.')) return;
+              try { await api('POST', '/api/uploads/delete', { url: f.url }); toast('Imagem excluída.'); renderView(); } catch (e) { toast(e.message, true); }
+            } }, 'Excluir'))))))));
     } catch (e) { box.innerHTML = ''; box.append(el('p', { class: 'empty', text: e.message })); }
   }
 

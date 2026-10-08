@@ -311,7 +311,20 @@ async function api(req, res, p) {
 
   if (p === '/api/uploads' && method === 'GET') return json(res, 200, await store.listUploads());
 
+  if (p === '/api/uploads/delete' && method === 'POST') {
+    const b = await readJsonBody(req);
+    const fname = path.basename(String(b.url || ''));
+    if (!fname || !(await store.deleteUpload(fname))) return json(res, 404, { ok: false, error: 'Imagem não encontrada.' });
+    return json(res, 200, { ok: true });
+  }
+
   if (p === '/api/leads' && method === 'GET') return json(res, 200, await store.listLeads());
+  if (p === '/api/leads/delete' && method === 'POST') {
+    const b = await readJsonBody(req);
+    const id = String(b.id || '');
+    if (!/^[0-9a-f-]{36}$/.test(id) || !(await store.deleteLead(id))) return json(res, 404, { ok: false, error: 'Lead não encontrado.' });
+    return json(res, 200, { ok: true });
+  }
   if (p === '/api/leads.csv' && method === 'GET') {
     const cols = ['createdAt', 'type', 'form', 'lang', 'name', 'email', 'phone', 'company', 'city', 'state', 'message', 'page'];
     const leads = await store.listLeads();
